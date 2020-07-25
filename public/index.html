@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CHAT DOS PUTÃO</title>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+ 
+  <div class="chat_" style="display:flex; flex-direction: column; align-items: center; justify-content: center;">
+    <h1>chat legal</h1>
+    <form id="chat" style="max-width: 300px">
+    <input type="text" class="form-control" name="username" value="Digite seu nome"/>
+    <div id="messages"></div>
+    <input type="message" class="form-control form-group" name="usermessage" value="Digite sua mensagem"/>
+    <button type="submit" class="btn btn-success">ENVIAR</button>
+  </form>
+</div>
+
+  <script>
+
+    var socket = io('http://localhost:3000');
+
+    function renderMessage(message) {
+      $('#messages').append('<div classe="messageAuthor"><strong>'+message.author+'</strong> <p>'+message.message+'<p></div>');
+    }
+
+    socket.on('receivedMessage', (message) => {
+      renderMessage(message);
+    });
+
+    socket.on('previousMessages', (messages) => {
+      for (message of messages) {
+        renderMessage(message);        
+      }  
+    });
+
+    $('#chat').submit(function(event){
+      event.preventDefault();
+
+      var author = $('input[name=username]').val();
+      var message = $('input[name=usermessage]').val();
+
+      if(author.length && message.length) {
+
+        messageObject = {
+          author: author,
+          message: message
+        };
+
+        renderMessage(messageObject);
+
+        socket.emit('sendMessage', messageObject);
+      }
+    });
+  </script>
+
+  <style>
+    * {
+      border-radius: 0 !important;
+    }
+    #messages {
+      height: 300px;
+      width: 100%;
+      border: 1px solid #ced4da;
+    }
+  </style>
+</body>
+</html>
