@@ -24,7 +24,7 @@
 
   <script>
 
-    var socket = io('http://chatemnodejs.herokuapp.com');
+    var socket = io('https://chatemnodejs.herokuapp.com', {secure: true});
 
     function renderMessage(message) {
       $('#messages').append('<div classe="messageAuthor"><strong>'+message.author+'</strong> <p>'+message.message+'<p></div>');
